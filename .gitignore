@@ -6,3 +6,5 @@
 
 # misc 
 /logs
+
+package-lock.json
