@@ -45,7 +45,7 @@ const langRouter = require('./router/langRouter')
 const roleRouter = require('./router/roleRouter')
 const permitRouter = require('./router/permitRouter')
 
-const greenHouseRouter = require('./router/green-house')
+const greenHouseRouter = require('./router/green-house/green-house')
 
 // Green House Router
 app.use('/green-house', greenHouseRouter)
