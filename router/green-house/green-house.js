@@ -113,6 +113,32 @@ router.post('/multi-del', async (req, res) => {
 })
 
 /**
+ * @api {post} /green-house/get
+ * @apiName 大棚详情
+ * @apiGroup GreenHouse
+ *
+ * @apiParam {Number} id 大棚id
+ */
+router.post('/get', async (req, res) => {
+  const id = req.body.id
+
+  try {
+    const resYesApi = await yesApi({
+      s: 'App.Table.Get',
+      model_name,
+      id,
+    })
+    console.log(resYesApi)
+    res.send(resYesApi)
+  } catch (error) {
+    res.send({
+      ret: 500,
+      msg: '大棚删除失败',
+    })
+  }
+})
+
+/**
  * @api {post} /green-house/page
  * @apiName 大棚列表
  * @apiGroup GreenHouse
@@ -134,6 +160,7 @@ router.post('/page', async (req, res) => {
       where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"], ["greenhouseName", "LIKE", "${greenhouseName}"]]`,
       page: pageNo,
       perpage: pageSize,
+      order: ['id DESC'],
       is_real_total: 1,
     })
     console.log(resYesApi)
