@@ -19,14 +19,11 @@ router.post('/add', async (req, res) => {
       s: 'App.Table.Create',
       model_name,
       data: {
-        Category: '蔬菜类',
-        PlantName: '番茄22',
-        Stage: '1', // 1 萌发期；2 幼苗期；3 生长期；4 开花期；5 结果期
         ...item,
       },
     })
-    console.log(resYesApi.data)
-    res.send(resYesApi.data)
+    console.log(resYesApi)
+    res.send(resYesApi)
   } catch (error) {
     res.send({
       ret: 500,
@@ -53,8 +50,8 @@ router.post('/update', async (req, res) => {
       id,
       data: item,
     })
-    console.log(resYesApi.data)
-    res.send(resYesApi.data)
+    console.log(resYesApi)
+    res.send(resYesApi)
   } catch (error) {
     res.send({
       ret: 500,
@@ -79,8 +76,8 @@ router.post('/del', async (req, res) => {
       model_name,
       id,
     })
-    console.log(resYesApi.data)
-    res.send(resYesApi.data)
+    console.log(resYesApi)
+    res.send(resYesApi)
   } catch (error) {
     res.send({
       ret: 500,
@@ -105,8 +102,8 @@ router.post('/multi-del', async (req, res) => {
       model_name,
       ids,
     })
-    console.log(resYesApi.data)
-    res.send(resYesApi.data)
+    console.log(resYesApi)
+    res.send(resYesApi)
   } catch (error) {
     res.send({
       ret: 500,
@@ -126,19 +123,21 @@ router.post('/multi-del', async (req, res) => {
 router.post('/page', async (req, res) => {
   const pageNo = Number(req.body.pageNo) || 1
   const pageSize = Number(req.body.pageSize) || 10
+  const greenHouseCode = req.body.greenHouseCode || ''
+  const greenhouseName = req.body.greenhouseName || ''
 
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.FreeQuery',
       model_name,
       logic: 'and',
-      where: '[["id", ">=", "1"], ["greenHouseCode", "LIKE", ""]]',
+      where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"], ["greenhouseName", "LIKE", "${greenhouseName}"]]`,
       page: pageNo,
       perpage: pageSize,
       is_real_total: 1,
     })
-    console.log(resYesApi.data)
-    res.send(resYesApi.data)
+    console.log(resYesApi)
+    res.send(resYesApi)
   } catch (error) {
     res.send({
       ret: 500,
