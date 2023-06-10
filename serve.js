@@ -47,10 +47,12 @@ const permitRouter = require('./router/permitRouter')
 
 const greenHouseRouter = require('./router/green-house/green-house')
 const envInfoRouter = require('./router/green-house/env-info')
+const seedRouter = require('./router/green-house/seed')
 
 // Green House Router
 app.use('/green-house', greenHouseRouter)
 app.use('/env-info', envInfoRouter)
+app.use('/seed', seedRouter)
 
 // 原有的 router
 app.use('/user', userRouter)
