@@ -46,9 +46,11 @@ const roleRouter = require('./router/roleRouter')
 const permitRouter = require('./router/permitRouter')
 
 const greenHouseRouter = require('./router/green-house/green-house')
+const envInfoRouter = require('./router/green-house/env-info')
 
 // Green House Router
 app.use('/green-house', greenHouseRouter)
+app.use('/env-info', envInfoRouter)
 
 // 原有的 router
 app.use('/user', userRouter)
