@@ -3,6 +3,7 @@ const router = express.Router()
 const { formatDateTime } = require('../../utils/time')
 const yesApi = require('../../utils/yesapi')
 const model_name = 'SeedInfo'
+const model_name_life_cycle = 'StandardLifeCycle'
 
 /**
  * @api {post} /seed/add
@@ -22,6 +23,22 @@ router.post('/add', async (req, res) => {
         ...item,
       },
     })
+    const id = resYesApi.data.id
+
+    for (let index = 1; index <= 5; index++) {
+      const stage = req.body[`stage${index}`] || {}
+      const resYesApi2 = await yesApi({
+        s: 'App.Table.CheckCreateOrUpdate',
+        model_name: model_name_life_cycle,
+        check_field: 'PlantCode,GrowingStage',
+        data: {
+          PlantCode: id,
+          GrowingStage: index,
+          ...stage,
+        },
+      })
+    }
+
     console.log(resYesApi)
     res.send(resYesApi)
   } catch (error) {
@@ -40,16 +57,34 @@ router.post('/add', async (req, res) => {
  * @apiParam {object} item 一条种子数据-yesAPI
  */
 router.post('/update', async (req, res) => {
-  const id = req.body.id
+  const id = req.body.id || -1
   const item = req.body.item || {}
 
   try {
     const resYesApi = await yesApi({
-      s: 'App.Table.Update',
+      s: 'App.Table.CheckCreateOrUpdate',
       model_name,
-      id,
-      data: item,
+      check_field: 'id',
+      data: {
+        id,
+        ...item,
+      },
     })
+
+    for (let index = 1; index <= 5; index++) {
+      const stage = req.body[`stage${index}`] || {}
+      const resYesApi2 = await yesApi({
+        s: 'App.Table.CheckCreateOrUpdate',
+        model_name: model_name_life_cycle,
+        check_field: 'PlantCode,GrowingStage',
+        data: {
+          PlantCode: id,
+          GrowingStage: index,
+          ...stage,
+        },
+      })
+    }
+
     console.log(resYesApi)
     res.send(resYesApi)
   } catch (error) {
@@ -128,12 +163,28 @@ router.post('/get', async (req, res) => {
       model_name,
       id,
     })
-    console.log(resYesApi)
+
+    const resYesApi2 = await yesApi({
+      s: 'App.Table.FreeQuery',
+      model_name: model_name_life_cycle,
+      where: `[["id", ">=", "1"], ["PlantCode", "EQ", "${id}"]]`,
+    })
+
+    resYesApi2.data.list.forEach((item) => {
+      resYesApi.data.data[`stage${item.GrowingStage}`] = item
+    })
+
+    for (let index = 1; index <= 5; index++) {
+      resYesApi.data.data[`stage${index}`] =
+        resYesApi.data.data[`stage${index}`] || {}
+    }
+
+    console.log(resYesApi.data)
     res.send(resYesApi)
   } catch (error) {
     res.send({
       ret: 500,
-      msg: '种子删除失败',
+      msg: '种子详情获取失败',
     })
   }
 })
@@ -149,16 +200,15 @@ router.post('/get', async (req, res) => {
 router.post('/page', async (req, res) => {
   const pageNo = Number(req.body.pageNo) || 1
   const pageSize = Number(req.body.pageSize) || 10
-  const greenHouseCode = req.body.greenHouseCode || ''
-  const greenhouseName = req.body.greenhouseName || ''
+  const PlantName = req.body.PlantName || ''
+  const Supplier = req.body.Supplier || ''
 
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.FreeQuery',
       model_name,
       logic: 'and',
-      // where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"], ["greenhouseName", "LIKE", "${greenhouseName}"]]`,
-      where: `[["id", ">=", "1"]]`,
+      where: `[["id", ">=", "1"], ["PlantName", "LIKE", "${PlantName}"], ["Supplier", "LIKE", "${Supplier}"]]`,
       page: pageNo,
       perpage: pageSize,
       order: ['id DESC'],
