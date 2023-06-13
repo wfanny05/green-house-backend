@@ -49,12 +49,16 @@ const greenHouseRouter = require('./router/green-house/green-house')
 const envInfoRouter = require('./router/green-house/env-info')
 const seedRouter = require('./router/green-house/seed')
 const seedLifeCycleRouter = require('./router/green-house/seed-life-cycle')
+const seedGalleryRouter = require('./router/green-house/seed-gallery')
+const seedImageRouter = require('./router/green-house/seed-image')
 
 // Green House Router
 app.use('/green-house', greenHouseRouter)
 app.use('/env-info', envInfoRouter)
 app.use('/seed', seedRouter)
 app.use('/seed-life-cycle', seedLifeCycleRouter)
+app.use('/seed-gallery', seedGalleryRouter)
+app.use('/seed-image', seedImageRouter)
 
 // 原有的 router
 app.use('/user', userRouter)
