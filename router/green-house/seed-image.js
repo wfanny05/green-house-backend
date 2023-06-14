@@ -76,10 +76,10 @@ router.post('/update', upload, async (req, res) => {
   const PictureDescription = req.body.PictureDescription || ''
   const PictureType = req.body.PictureType || 3 // 1: 正常图片  2：病虫害图片  3：其他
   // console.log(req.body.test, req.file, req.files)
-  let path = ''
-  let PictureAddress = ''
-  if(req.file) {
-    path = req.file
+  let path
+  let PictureAddress
+  if (req.file) {
+    path = req.file.path
     PictureAddress = '/' + path // 图片地址
   }
 

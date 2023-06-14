@@ -56,7 +56,7 @@ router.post('/add', async (req, res) => {
  *
  * @apiParam {object} item 一条种子数据-yesAPI
  */
-router.post('/update', async (req, res) => {
+router.post('/add-or-update', async (req, res) => {
   const id = req.body.id || -1
   const item = req.body.item || {}
 
