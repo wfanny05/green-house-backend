@@ -69,16 +69,32 @@ router.post('/add', upload, async (req, res) => {
  *
  * @apiParam {object} item 一条图片数据-yesAPI
  */
-router.post('/update', async (req, res) => {
+router.post('/update', upload, async (req, res) => {
   const id = req.body.id
-  let item = req.body.item || {}
+  const PictureSetID = req.body.PictureSetID || ''
+  const PictureName = req.body.PictureName || ''
+  const PictureDescription = req.body.PictureDescription || ''
+  const PictureType = req.body.PictureType || 3 // 1: 正常图片  2：病虫害图片  3：其他
+  // console.log(req.body.test, req.file, req.files)
+  let path = ''
+  let PictureAddress = ''
+  if(req.file) {
+    path = req.file
+    PictureAddress = '/' + path // 图片地址
+  }
 
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.Update',
       model_name,
       id,
-      data: item,
+      data: {
+        PictureSetID,
+        PictureName,
+        PictureDescription,
+        PictureType,
+        PictureAddress,
+      },
     })
     console.log(resYesApi)
     res.send(resYesApi)
