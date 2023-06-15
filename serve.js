@@ -53,6 +53,7 @@ const seedGalleryRouter = require('./router/green-house/seed-gallery')
 const seedImageRouter = require('./router/green-house/seed-image')
 const plantRouter = require('./router/green-house/plant')
 const plantImageRouter = require('./router/green-house/plant-image')
+const sensorRouter = require('./router/green-house/sensor')
 
 // Green House Router
 app.use('/green-house', greenHouseRouter)
@@ -63,6 +64,7 @@ app.use('/seed-gallery', seedGalleryRouter)
 app.use('/seed-image', seedImageRouter)
 app.use('/plant', plantRouter)
 app.use('/plant-image', plantImageRouter)
+app.use('/sensor', sensorRouter)
 
 // 原有的 router
 app.use('/user', userRouter)
