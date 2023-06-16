@@ -10,4 +10,4 @@
 package-lock.json
 
 # static folder
-/static/green-house
+# /static/green-house
