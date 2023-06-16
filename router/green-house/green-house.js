@@ -188,4 +188,36 @@ router.post('/page', async (req, res) => {
   }
 })
 
+/**
+ * @api {post} /green-house/group
+ * @apiName 大棚分组聚合
+ * @apiGroup GreenHouse
+ *
+ * @apiParam 
+ */
+router.post('/group', async (req, res) => {
+  let op_fun = req.body.opFun || ''
+  let op_field = req.body.opFiled || ''
+  let group_filed = req.body.groupFiled || ''
+  
+  console.log(op_fun, op_field, group_filed)
+  try {
+    const resYesApi = await yesApi({
+      s: 'App.Table.FreeAF',
+      model_name,
+      op_fun,
+      op_field: 'greenHouseCode',
+      group_filed,
+      where: `[["id", ">=", "1"]]`,
+    })
+    console.log(resYesApi)
+    res.send(resYesApi)
+  } catch (error) {
+    res.send({
+      ret: 500,
+      msg: '大棚新增失败',
+    })
+  }
+})
+
 module.exports = router
