@@ -161,13 +161,15 @@ router.post('/page', async (req, res) => {
   const pageSize = Number(req.body.pageSize) || 10
   const greenHouseCode = req.body.greenHouseCode || ''
   const greenhouseName = req.body.greenhouseName || ''
+  const select = req.body.select || ''
 
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.FreeQuery',
       model_name,
       logic: 'and',
-      where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"]]`, // ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]
+      select,
+      where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"], ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]`, // ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]
       page: pageNo,
       perpage: pageSize,
       order: ['id DESC'],
@@ -176,9 +178,9 @@ router.post('/page', async (req, res) => {
     resYesApi.data.list.forEach((item) => {
       changeItem2(item)
     })
-    console.log(resYesApi)
     res.send(resYesApi)
   } catch (error) {
+    console.error(error)
     res.send({
       ret: 500,
       msg: '大棚列表获取失败',

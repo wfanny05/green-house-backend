@@ -3,6 +3,7 @@ const router = express.Router()
 const { formatDateTime } = require('../../utils/time')
 const yesApi = require('../../utils/yesapi')
 const model_name = 'EnvironmentInfo'
+const model_name_green_house = 'greenhouseInfo'
 
 /**
  * @api {post} /env-info/add
@@ -149,22 +150,84 @@ router.post('/get', async (req, res) => {
 router.post('/page', async (req, res) => {
   const pageNo = Number(req.body.pageNo) || 1
   const pageSize = Number(req.body.pageSize) || 10
+  const greenHouseId = req.body.greenHouseId || 0
   const greenHouseCode = req.body.greenHouseCode || ''
-  const greenhouseName = req.body.greenhouseName || ''
+  const greenHouseName = req.body.greenHouseName || ''
 
   try {
+    let greenHouseList = []
+    let greenHouseObj = {}
+    let greenHouseIds = []
+    if (greenHouseId) {
+      const resYesApi2 = await yesApi({
+        s: 'App.Table.Get',
+        model_name: model_name_green_house,
+        id: greenHouseId,
+      })
+      greenHouseList = resYesApi2.data.data ? [resYesApi2.data.data] : []
+      greenHouseObj[greenHouseId] = resYesApi2.data.data || {}
+    } else if (greenHouseCode || greenHouseName) {
+      const resYesApi3 = await yesApi({
+        s: 'App.Table.FreeQuery',
+        model_name: model_name_green_house,
+        logic: 'and',
+        where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"], ["GreenHouseNameNew", "LIKE", "${greenHouseName}"]]`,
+        page: 1,
+        perpage: 100,
+        order: ['id DESC'],
+        is_real_total: 1,
+      })
+      greenHouseList = resYesApi3.data.list || []
+      if (greenHouseList.length > 0) {
+        greenHouseIds = greenHouseList.map((item) => {
+          greenHouseObj[item.id] = item
+          return item.id
+        })
+      }
+      console.log('greenHouseIds', greenHouseIds)
+    }
+
+    let query = `[["id", ">=", "1"]]`
+    if (greenHouseId) {
+      query = `[["id", ">=", "1"], ["greenHouseCode", "EQ", "${greenHouseId}"]]`
+    } else if (greenHouseCode || greenHouseName) {
+      query =
+        greenHouseIds.length > 0
+          ? `[["id", ">=", "1"],["greenHouseCode", "IN", ${JSON.stringify(
+              greenHouseIds,
+            )}]]`
+          : `[["id", ">=", "1"],["greenHouseCode", "EQ", "-1"]]`
+    }
     const resYesApi = await yesApi({
       s: 'App.Table.FreeQuery',
       model_name,
       logic: 'and',
-      // where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"], ["greenhouseName", "LIKE", "${greenhouseName}"]]`,
-      where: `[["id", ">=", "1"]]`,
+      where: query,
       page: pageNo,
       perpage: pageSize,
       order: ['id DESC'],
       is_real_total: 1,
     })
-    console.log(resYesApi)
+    const list = resYesApi.data.list
+    for (let index = 0; index < list.length; index++) {
+      const item = list[index]
+      if (greenHouseList.length > 0) {
+        item.greenHouse = greenHouseObj[item.GreenhouseCode] || {}
+      } else {
+        const resYesApi2 = await yesApi({
+          s: 'App.Table.Get',
+          model_name: model_name_green_house,
+          id: Number(item.GreenhouseCode),
+        })
+        item.greenHouse = resYesApi2.data.data || {}
+      }
+      // console.log(item.greenHouse)
+      item.greenHouseId = item.greenHouse.id
+      item.greenHouseName = item.greenHouse.GreenHouseNameNew
+      item.greenHouseCode = item.greenHouse.greenHouseCode
+    }
+
+    // console.log(resYesApi.data.list)
     res.send(resYesApi)
   } catch (error) {
     res.send({
