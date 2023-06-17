@@ -207,13 +207,14 @@ router.post('/page', async (req, res) => {
   const pageNo = Number(req.body.pageNo) || 1
   const pageSize = Number(req.body.pageSize) || 10
   const PictureSetID = req.body.PictureSetID || ''
+  const PictureType = req.body.PictureType || ''
 
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.FreeQuery',
       model_name,
       logic: 'and',
-      where: `[["id", ">=", "1"], ["PictureSetID", "EQ", "${PictureSetID}"]]`, // ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]
+      where: `[["id", ">=", "1"], ["PictureSetID", "EQ", "${PictureSetID}"], ["PictureType", "LIKE", "${PictureType}"]]`, // ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]
       page: pageNo,
       perpage: pageSize,
       order: ['id DESC'],

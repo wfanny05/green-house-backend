@@ -142,18 +142,19 @@ router.post('/get', async (req, res) => {
       model_name: model_name_seed,
       id: Number(item.PlantCode),
     })
-    item.seed = resYesApi2.data.data || {}
-    item.seedName = item.seed.PlantName || ''
-    item.seedId = item.seed.id || ''
+    let seed = resYesApi2.data.data || {}
+    item.seedName = seed.PlantName || ''
+    item.seedId = seed.id || ''
+    item.PictureSetID = seed.Pictures || ''
     const resYesApi3 = await yesApi({
       s: 'App.Table.Get',
       model_name: model_name_green_house,
       id: Number(item.GreenhouseCode),
     })
     // console.log(item.GreenhouseCode, resYesApi3.data)
-    item.greenHouse = resYesApi3.data.data || {}
-    item.greenHouseName = item.greenHouse.GreenHouseNameNew || ''
-    item.greenHouseId = item.greenHouse.id || ''
+    let greenHouse = resYesApi3.data.data || {}
+    item.greenHouseName = greenHouse.GreenHouseNameNew || ''
+    item.greenHouseId = greenHouse.id || ''
 
     console.log(resYesApi)
     res.send(resYesApi)

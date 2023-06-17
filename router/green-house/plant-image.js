@@ -34,6 +34,7 @@ const upload = multer({ storage: storage }).single('fileList') // 获取fileList
 router.post('/add', upload, async (req, res) => {
   const PlantCode = req.body.plantId || '' // 作物id
   const PictureName = req.body.PictureName || ''
+  const PictureType = req.body.PictureType || ''
   const Description = req.body.Description || ''
   // console.log(req.body.test, req.file, req.files)
   const { path } = req.file
@@ -45,6 +46,7 @@ router.post('/add', upload, async (req, res) => {
       model_name,
       data: {
         PlantCode,
+        PictureType,
         Description,
         PictureSite,
       },
@@ -70,7 +72,9 @@ router.post('/update', upload, async (req, res) => {
   const id = req.body.id
   const PlantCode = req.body.plantId || ''
   const PictureName = req.body.PictureName || ''
+  const PictureType = req.body.PictureType || ''
   const Description = req.body.Description || ''
+  // console.log('PictureType', PictureType)
   // console.log(req.body.test, req.file, req.files)
   let path
   let PictureSite
@@ -86,6 +90,7 @@ router.post('/update', upload, async (req, res) => {
       id,
       data: {
         PlantCode,
+        PictureType,
         Description,
         PictureSite, // 图片地址
       },
