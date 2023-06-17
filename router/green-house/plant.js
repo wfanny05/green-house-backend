@@ -43,6 +43,14 @@ router.post('/add', async (req, res) => {
 router.post('/update', async (req, res) => {
   const id = req.body.id
   let item = req.body.item || {}
+  item.PlantCode = item.seedId // 种子id
+  item.GreenhouseCode = item.greenHouseId // 大棚id
+  delete item.seedId
+  delete item.seedName
+  delete item.greenHouseId
+  delete item.greenHouseName
+  delete item.PlantStatusName
+  // delete item.seedName
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.Update',
