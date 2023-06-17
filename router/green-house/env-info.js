@@ -211,20 +211,21 @@ router.post('/page', async (req, res) => {
     const list = resYesApi.data.list
     for (let index = 0; index < list.length; index++) {
       const item = list[index]
+      let greenHouse = {}
       if (greenHouseList.length > 0) {
-        item.greenHouse = greenHouseObj[item.GreenhouseCode] || {}
+        greenHouse = greenHouseObj[item.GreenhouseCode] || {}
       } else {
         const resYesApi2 = await yesApi({
           s: 'App.Table.Get',
           model_name: model_name_green_house,
           id: Number(item.GreenhouseCode),
         })
-        item.greenHouse = resYesApi2.data.data || {}
+        greenHouse = resYesApi2.data.data || {}
       }
       // console.log(item.greenHouse)
-      item.greenHouseId = item.greenHouse.id
-      item.greenHouseName = item.greenHouse.GreenHouseNameNew
-      item.greenHouseCode = item.greenHouse.greenHouseCode
+      item.greenHouseId = greenHouse.id
+      item.greenHouseName = greenHouse.GreenHouseNameNew
+      item.greenHouseCode = greenHouse.greenHouseCode
     }
 
     // console.log(resYesApi.data.list)

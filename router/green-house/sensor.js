@@ -150,6 +150,7 @@ router.post('/page', async (req, res) => {
   const pageSize = Number(req.body.pageSize) || 10
   const SensorCode = req.body.SensorCode || ''
   const SensorName = req.body.SensorName || ''
+  const sample = req.body.sample ? req.body.sample : false
 
   try {
     const resYesApi = await yesApi({
@@ -163,21 +164,23 @@ router.post('/page', async (req, res) => {
       is_real_total: 1,
     })
 
-    const list = resYesApi.data.list || []
-    await new Promise(async (resolve, reject) => {
-      for (let index = 0; index < list.length; index++) {
-        const item = list[index]
-        const resYesApi2 = await yesApi({
-          s: 'App.Table.Get',
-          model_name: model_name_green_house,
-          id: Number(item.greenHouseCode),
-        })
-        // console.log(item.greenHouseCode, resYesApi2.data)
-        item.greenHouse = resYesApi2.data.data || {}
-        item.greenhouseName = item.greenHouse.GreenHouseNameNew || ''
-        if (index == list.length - 1) resolve('done')
-      }
-    })
+    if(!sample) {
+      const list = resYesApi.data.list || []
+      await new Promise(async (resolve, reject) => {
+        for (let index = 0; index < list.length; index++) {
+          const item = list[index]
+          const resYesApi2 = await yesApi({
+            s: 'App.Table.Get',
+            model_name: model_name_green_house,
+            id: Number(item.greenHouseCode),
+          })
+          // console.log(item.greenHouseCode, resYesApi2.data)
+          item.greenHouse = resYesApi2.data.data || {}
+          item.greenhouseName = item.greenHouse.GreenHouseNameNew || ''
+          if (index == list.length - 1) resolve('done')
+        }
+      })
+    }
 
     console.log(resYesApi)
     res.send(resYesApi)

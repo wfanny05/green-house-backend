@@ -11,3 +11,5 @@ package-lock.json
 
 # static folder
 # /static/green-house
+
+.DS_Store
