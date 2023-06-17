@@ -3,6 +3,8 @@ const router = express.Router()
 const { formatDateTime } = require('../../utils/time')
 const yesApi = require('../../utils/yesapi')
 const multer = require('multer')
+const fs = require('fs')
+const path = require('path')
 const model_name = 'StandardPictures'
 
 // storage
@@ -141,16 +143,24 @@ router.post('/del', async (req, res) => {
  */
 router.post('/multi-del', async (req, res) => {
   const ids = req.body.ids
-
+  const imagePaths = req.body.imagePaths
+  // console.log(ids, imagePaths)
   try {
     const resYesApi = await yesApi({
       s: 'App.Table.MultiDelete',
       model_name,
       ids,
     })
+    
+    for (let index = 0; index < imagePaths.length; index++) {
+      const item = imagePaths[index];
+      fs.unlinkSync(path.join(__dirname, '../../', item))
+    }
+    
     console.log(resYesApi)
     res.send(resYesApi)
   } catch (error) {
+    console.error(error)
     res.send({
       ret: 500,
       msg: '图片删除失败',

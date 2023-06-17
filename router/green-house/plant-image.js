@@ -135,6 +135,7 @@ router.post('/del', async (req, res) => {
  */
 router.post('/multi-del', async (req, res) => {
   const ids = req.body.ids
+  const imagePaths = req.body.imagePaths
 
   try {
     const resYesApi = await yesApi({
@@ -142,6 +143,10 @@ router.post('/multi-del', async (req, res) => {
       model_name,
       ids,
     })
+    for (let index = 0; index < imagePaths.length; index++) {
+      const item = imagePaths[index];
+      fs.unlinkSync(path.join(__dirname, '../../', item))
+    }
     console.log(resYesApi)
     res.send(resYesApi)
   } catch (error) {

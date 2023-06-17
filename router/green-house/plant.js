@@ -168,7 +168,8 @@ router.post('/get', async (req, res) => {
 router.post('/page', async (req, res) => {
   const pageNo = Number(req.body.pageNo) || 1
   const pageSize = Number(req.body.pageSize) || 10
-  // const greenHouseCode = req.body.greenHouseCode || ''
+  const greenHouseId = req.body.greenHouseId || ''
+  const sample = req.body.sample ? req.body.sample : false
   // const greenhouseName = req.body.greenhouseName || ''
 
   try {
@@ -176,36 +177,38 @@ router.post('/page', async (req, res) => {
       s: 'App.Table.FreeQuery',
       model_name,
       logic: 'and',
-      where: `[["id", ">=", "1"]]`,
-      // where: `[["id", ">=", "1"], ["greenHouseCode", "LIKE", "${greenHouseCode}"]]`, // ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]
+      // where: `[["id", ">=", "1"]]`,
+      where: `[["id", ">=", "1"], ["GreenhouseCode", "LIKE", "${greenHouseId}"]]`, // ["GreenHouseNameNew", "LIKE", "${greenhouseName}"]]
       page: pageNo,
       perpage: pageSize,
       order: ['id DESC'],
       is_real_total: 1,
     })
-    console.log(resYesApi)
-    const list = resYesApi.data.list || []
-    await new Promise(async (resolve, reject) => {
-      for (let index = 0; index < list.length; index++) {
-        const item = list[index]
-        const resYesApi2 = await yesApi({
-          s: 'App.Table.Get',
-          model_name: model_name_seed,
-          id: Number(item.PlantCode),
-        })
-        item.seed = resYesApi2.data.data || {}
-        item.seedName = item.seed.PlantName || ''
-        const resYesApi3 = await yesApi({
-          s: 'App.Table.Get',
-          model_name: model_name_green_house,
-          id: Number(item.GreenhouseCode),
-        })
-        // console.log(item.GreenhouseCode, resYesApi3.data)
-        item.greenHouse = resYesApi3.data.data || {}
-        item.greenHouseName = item.greenHouse.GreenHouseNameNew || ''
-        if (index == list.length - 1) resolve('done')
-      }
-    })
+    // console.log(resYesApi)
+    if(!sample) {
+      const list = resYesApi.data.list || []
+      await new Promise(async (resolve, reject) => {
+        for (let index = 0; index < list.length; index++) {
+          const item = list[index]
+          const resYesApi2 = await yesApi({
+            s: 'App.Table.Get',
+            model_name: model_name_seed,
+            id: Number(item.PlantCode),
+          })
+          item.seed = resYesApi2.data.data || {}
+          item.seedName = item.seed.PlantName || ''
+          const resYesApi3 = await yesApi({
+            s: 'App.Table.Get',
+            model_name: model_name_green_house,
+            id: Number(item.GreenhouseCode),
+          })
+          // console.log(item.GreenhouseCode, resYesApi3.data)
+          item.greenHouse = resYesApi3.data.data || {}
+          item.greenHouseName = item.greenHouse.GreenHouseNameNew || ''
+          if (index == list.length - 1) resolve('done')
+        }
+      })
+    }
     console.log(999, resYesApi)
     res.send(resYesApi)
   } catch (error) {
